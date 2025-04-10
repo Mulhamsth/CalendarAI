@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "dgSpecHash": "t41LEzVD73Q=",
+  "success": true,
+  "projectFilePath": "D:\\Projects\\Local\\CalendarAI\\CalendarAI\\CalendarAI.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\mulha\\.nuget\\packages\\globalhotkey\\1.1.0\\globalhotkey.1.1.0.nupkg.sha512",
+    "C:\\Users\\mulha\\.nuget\\packages\\hardcodet.notifyicon.wpf\\1.1.0\\hardcodet.notifyicon.wpf.1.1.0.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'GlobalHotKey 1.1.0' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net9.0-windows7.0'. This package may not be fully compatible with your project.",
+      "libraryId": "GlobalHotKey",
+      "targetGraphs": [
+        "net9.0-windows7.0"
+      ]
+    }
+  ]
+}
