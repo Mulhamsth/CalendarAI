@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "t41LEzVD73Q=",
+  "dgSpecHash": "g7GViys3HK4=",
   "success": true,
-  "projectFilePath": "D:\\Projects\\Local\\CalendarAI\\CalendarAI\\CalendarAI.csproj",
+  "projectFilePath": "C:\\Users\\user\\Documents\\Projects\\Coding\\CalendarAI\\CalendarAI\\CalendarAI.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\mulha\\.nuget\\packages\\globalhotkey\\1.1.0\\globalhotkey.1.1.0.nupkg.sha512",
-    "C:\\Users\\mulha\\.nuget\\packages\\hardcodet.notifyicon.wpf\\1.1.0\\hardcodet.notifyicon.wpf.1.1.0.nupkg.sha512"
+    "C:\\Users\\user\\.nuget\\packages\\globalhotkey\\1.1.0\\globalhotkey.1.1.0.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\hardcodet.notifyicon.wpf\\1.1.0\\hardcodet.notifyicon.wpf.1.1.0.nupkg.sha512"
   ],
   "logs": [
     {

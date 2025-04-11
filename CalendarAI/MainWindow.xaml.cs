@@ -176,7 +176,7 @@ public partial class MainWindow : Window
                        # Systemprompt
                        Dates for assistance:
                        ```
-                       {{string.Join(Environment.NewLine, Enumerable.Range(-1, 14).Select(GetSmartDateLine))}}
+                       {{string.Join(Environment.NewLine, Enumerable.Range(-3, 21).Select(GetSmartDateLine))}}
                        ```
                        
                        Convert this task description(query) into a JSON.
@@ -188,6 +188,7 @@ public partial class MainWindow : Window
                        {
                          "date": "dd.MM.yyyy",
                        }
+                       Nothing else, no formatting, nothing else. no \n no thing just the date in json RFC8259 compliant.
                        
                        Example:
                        Query: task at 
@@ -195,6 +196,8 @@ public partial class MainWindow : Window
                        try to extract the date from the query. If no date is specified take today's date. 
                        
                        so "make an appointment with max on friday from 19 to 20" => you need to ignore 19 to 20 because it references the time 19:00 till 20:00 just take date information
+                       
+                       If there is not enough information to set a date, take today's date
                        """;
                 
                 var dateRequestBody = new
@@ -202,7 +205,17 @@ public partial class MainWindow : Window
                     system = datePrompt,
                     model = "mistral",
                     prompt = description,
-                    stream = false
+                    stream = false,
+                    format = new
+                        {
+                            type = "object",
+                            properties = new
+                            {
+                                date = new { type = "string" }
+                            },
+                            required = new[] { "date" }
+                        },
+                    temperature = 0.0
                 };
 
                 var dateResponse = await _httpClient.PostAsync(
@@ -227,23 +240,19 @@ public partial class MainWindow : Window
                     // Second request: Extract full task details
                     var taskPrompt = $$$"""
                     # Systemprompt
-                     yesterday was {{{DateTime.Today.AddDays(-1).ToString("dd.MM.yyyy")}}}, {{{DateTime.Today.AddDays(-1).DayOfWeek.ToString()}}}.
                      today is {{{DateTime.Today.ToString("dd.MM.yyyy")}}}, {{{DateTime.Today.DayOfWeek.ToString()}}}.
-                     tomorrow is {{{DateTime.Today.AddDays(1).ToString("dd.MM.yyyy")}}}, {{{DateTime.Today.AddDays(1).DayOfWeek.ToString()}}}.
                     
                     Convert this task description(query) into a JSON.
                     Only provide a RFC8259 compliant JSON response following this format without deviation:
                     {
-                        "date": "date and time of the task provided by the user",
-                        "startTime": "the time when the task should starts.",
-                        "taskName" : "the name of the task you generate. Generate a Title that briefly names the Task. Do not include information already contained in date or startTime",
-                        "description": "the description of the task you generate based on the query. Describe the task based on the information given. Do not include information already contained in date or startTime",
+                        "startTime": "the time when the task should starts.", (do not take dates into account)
+                        "taskName" : "the name of the task you generate. Generate a Title that briefly names the Task. Do not include information already contained in date or startTime. Dont make anything up, only take infromation thats given",
+                        "description": "the description of the task you generate based on the query. Describe the task based on the information given. Do not include information already contained in date or startTime. Dont make anything up, only take infromation thats given.",
                         "duration": "how long the task takes in hours"
                     }
 
                     format:
                     {
-                        "date": "dd.MM.yyyy",
                         "startTime": "hh:mm",
                         "description": "description",
                         "duration": 0.75,
@@ -252,10 +261,9 @@ public partial class MainWindow : Window
 
                     ## strictly adhere to these rules:
                     The Default duration of a task is 1.
-                    If no date is specified take today's date.
-                    If there is something like tommorow or friday next week, calculate that date based on today's date 
-                    The Default value of startTime is null, if the user doesn't specify a time.
+                    The Default value of startTime is null, if the user doesn't specify a time. (do not take dates into account)
                     The Default value of taskName is something you can generate based on the description
+                    If there is not enough information within the prompt to make a meaningful task, just schedule a Task called what the query said today startime null.
                     
                     No extra formatting. No extra text besides the Json.
                     """;
@@ -265,7 +273,19 @@ public partial class MainWindow : Window
                         system = taskPrompt,
                         model = "llama3.2:3b-instruct-q8_0",
                         prompt = description,
-                        stream = false
+                        stream = false,
+                        format = new
+                            {
+                                type = "object",
+                                properties = new
+                                {
+                                    startTime = new { type = "string" },
+                                    taskName = new { type = "string" },
+                                    description = new { type = "string" },
+                                    duration = new { type = "number" } // use number for double/float values
+                                },
+                                required = new[] { "startTime", "taskName", "description", "duration" }
+                            },
                     };
 
                     var taskResponse = await _httpClient.PostAsync(
